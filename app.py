@@ -4,7 +4,7 @@ from datetime import datetime
 
 app = Flask(__name__)
 
-POWERBI_URL = "COLE_AQUI_SUA_PUSH_URL_DO_POWERBI"
+POWERBI_URL = "https://api.powerbi.com/beta/f85b6051-e263-462b-9ca5-f211f1f783d2/datasets/e3190e2e-748b-4e94-8571-df62578bbd5b/rows?experience=power-bi&key=hmmd2YgFcFYVzEDqMI0MtbMvsJIy3dnoUIVd0hAi7I9peGu9YIZK5OU7bCy7I2HCu6Jce7Z9FwcbpEZMJtRGCw%3D%3D"
 
 @app.route("/redcap", methods=["POST"])
 def redcap_webhook():
@@ -25,3 +25,4 @@ def redcap_webhook():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=10000)
+
