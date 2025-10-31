@@ -42,7 +42,7 @@ def redcap():
 
         # Monta o payload para o Google Sheets
         data = [{
-            "record_id": registro.get("record_id", ""),
+            "record_id": str(registro.get("record_id", "")),  # converte para string
             "total_plan": registro.get("total_plan", ""),
             "total_c1": registro.get("total_c1", ""),
             "total_c2": registro.get("total_c2", ""),
@@ -63,5 +63,3 @@ def redcap():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=10000)
-
-
