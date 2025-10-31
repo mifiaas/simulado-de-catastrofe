@@ -5,7 +5,7 @@ from datetime import datetime
 app = Flask(__name__)
 
 # URL da API do REDCap
-REDCAP_API_URL = "https://SEU-REDCAP/api/"
+REDCAP_API_URL = "https://redcap.fcmsantacasasp.edu.br/api/"
 REDCAP_TOKEN = "2B90EF2F5C5A59B08A6655751F613365"
 
 # URL do Google Apps Script
@@ -63,3 +63,4 @@ def redcap():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=10000)
+
