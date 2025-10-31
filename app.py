@@ -4,7 +4,11 @@ from datetime import datetime
 
 app = Flask(__name__)
 
-# URL do Google Apps Script (substitua pela sua)
+# URL da API do REDCap
+REDCAP_API_URL = "https://SEU-REDCAP/api/"
+REDCAP_TOKEN = "2B90EF2F5C5A59B08A6655751F613365"
+
+# URL do Google Apps Script
 GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbyxFt97KbRxsQVM8Uze1AV7VHD0F2bTEIzMhXmJgAbjtE9TwmHksCjyIjNJ7aDvAGtk/exec"
 
 @app.route("/")
@@ -13,35 +17,49 @@ def home():
 
 @app.route("/redcap", methods=["POST"])
 def redcap():
-    # Pega os dados enviados pelo REDCap
-    record_id = request.form.get('record', 'sem_id')
-    total_plan = request.form.get('total_plan', '')
-    total_c1 = request.form.get('total_c1', '')
-    total_c2 = request.form.get('total_c2', '')
-    total_c3 = request.form.get('total_c3', '')
-    total_c4 = request.form.get('total_c4', '')
+    record_id = request.form.get("record")
+    if not record_id:
+        return jsonify({"error": "Sem record_id"}), 400
 
-    timestamp = datetime.now().isoformat()
-
-    # Monta o payload a ser enviado ao Google Sheets
-    data = [{
-        "record_id": record_id,
-        "total_plan": total_plan,
-        "total_c1": total_c1,
-        "total_c2": total_c2,
-        "total_c3": total_c3,
-        "total_c4": total_c4,
-        "timestamp": timestamp
-    }]
+    # 🔹 Busca os dados completos via API do REDCap
+    payload = {
+        "token": REDCAP_TOKEN,
+        "content": "record",
+        "format": "json",
+        "type": "flat",
+        "records[0]": record_id
+    }
 
     try:
+        redcap_response = requests.post(REDCAP_API_URL, data=payload)
+        redcap_data = redcap_response.json()
+
+        if not redcap_data:
+            return jsonify({"error": "Nenhum dado retornado do REDCap"}), 404
+
+        # Pega o primeiro (ou único) registro retornado
+        registro = redcap_data[0]
+
+        # Monta o payload para o Google Sheets
+        data = [{
+            "record_id": registro.get("record_id", ""),
+            "total_plan": registro.get("total_plan", ""),
+            "total_c1": registro.get("total_c1", ""),
+            "total_c2": registro.get("total_c2", ""),
+            "total_c3": registro.get("total_c3", ""),
+            "total_c4": registro.get("total_c4", ""),
+            "timestamp": datetime.now().isoformat()
+        }]
+
+        # Envia ao Google Sheets
         r = requests.post(GOOGLE_SHEETS_URL, json=data)
         print("Google Sheets response:", r.text)
+
     except Exception as e:
-        print("Erro ao enviar para Google Sheets:", e)
+        print("Erro:", e)
+        return jsonify({"error": str(e)}), 500
 
     return jsonify({"status": "ok"}), 200
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=10000)
-
