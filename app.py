@@ -5,7 +5,7 @@ from datetime import datetime
 app = Flask(__name__)
 
 # URL do Google Apps Script (substitua pela sua)
-GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbyR8h4p7HrekZHVAZ3m7VUEH90MrMZpJqpykhkC5pTw9JWdgKqPyfINOsVmKCvUql4/exec"
+GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbyxFt97KbRxsQVM8Uze1AV7VHD0F2bTEIzMhXmJgAbjtE9TwmHksCjyIjNJ7aDvAGtk/exec"
 
 @app.route("/")
 def home():
@@ -44,3 +44,4 @@ def redcap():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=10000)
+
