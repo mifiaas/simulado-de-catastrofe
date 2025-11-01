@@ -9,7 +9,7 @@ REDCAP_API_URL = "https://redcap.fcmsantacasasp.edu.br/api/"
 REDCAP_TOKEN = "2B90EF2F5C5A59B08A6655751F613365"
 
 # URL do Google Apps Script
-GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbwxOAAI27cCxzO59XIlteatkUsxxklwY5vryhnwyV6ZcazL2ETYDqfGRJnDaLYfTzYS/exec"
+GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbxXrl83NGgJxwhuUVVF6f8OZU5bqFdPX45ElTAAIAOsE0eWg0PkzART-oH-L6VacjL-/exec"
 
 @app.route("/")
 def home():
@@ -63,6 +63,7 @@ def redcap():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=10000)
+
 
 
 
