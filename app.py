@@ -8,8 +8,8 @@ app = Flask(__name__)
 REDCAP_API_URL = "https://redcap.fcmsantacasasp.edu.br/api/"
 REDCAP_TOKEN = "2B90EF2F5C5A59B08A6655751F613365"
 
-# URL do Google Apps Script
-GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbweglG9B545uBscoRa7Ek7T7SV8Xu105b_kFa55WdRarHkWPguQ69MF7Dn9ltXqpy5H/exec"
+# URL do Google Apps Script – substitua quando implantar
+GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbyOmdDbI7e2LkEfRSL6Px8Xgo1ouwQ6IeuD1dQuAjJ-rqhGE2gyOT-psiXcU53Zeuyywg/exec"
 
 @app.route("/")
 def home():
@@ -19,9 +19,11 @@ def home():
 def redcap():
     record_id = request.form.get("record")
     if not record_id:
+        print("❌ Sem record_id recebido do REDCap")
         return jsonify({"error": "Sem record_id"}), 400
 
-    # 🔹 Busca os dados completos via API do REDCap
+    print(f"📩 Trigger recebido para record_id={record_id}")
+
     payload = {
         "token": REDCAP_TOKEN,
         "content": "record",
@@ -33,16 +35,16 @@ def redcap():
     try:
         redcap_response = requests.post(REDCAP_API_URL, data=payload)
         redcap_data = redcap_response.json()
+        print("📤 Resposta do REDCap:", redcap_data)
 
         if not redcap_data:
+            print("⚠️ Nenhum dado retornado do REDCap.")
             return jsonify({"error": "Nenhum dado retornado do REDCap"}), 404
 
-        # Pega o primeiro (ou único) registro retornado
         registro = redcap_data[0]
 
-        # Monta o payload para o Google Sheets
         data = [{
-            "record_id": str(registro.get("record_id", "")),  # converte para string
+            "record_id": str(registro.get("record_id", "")),
             "total_plan": registro.get("total_plan", ""),
             "total_c1": registro.get("total_c1", ""),
             "total_c2": registro.get("total_c2", ""),
@@ -51,22 +53,16 @@ def redcap():
             "timestamp": datetime.now().isoformat()
         }]
 
-        # Envia ao Google Sheets
+        print("📦 Enviando ao Google Sheets:", data)
+
         r = requests.post(GOOGLE_SHEETS_URL, json=data)
-        print("Google Sheets response:", r.text)
+        print("🪵 Resposta do Google Script:", r.text)
 
     except Exception as e:
-        print("Erro:", e)
+        print("🚨 Erro no processo:", e)
         return jsonify({"error": str(e)}), 500
 
     return jsonify({"status": "ok"}), 200
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=10000)
-
-
-
-
-
-
-
